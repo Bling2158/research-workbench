@@ -1,0 +1,6 @@
+.data/
+.env
+.env.*
+.ai/
+test-output/
+node_modules/

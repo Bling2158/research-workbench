@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+.data/
+.ai/
+.vercel/
+node_modules/
+test-output/
+__pycache__/
+*.pyc
+*.zip
+*.pdf
+.data-demo/

@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {emptyState} from '../lib/store.mjs';
+import {saveProject,editProject,projectContext,researchContext} from '../lib/domain.mjs';
+test('user correction becomes current context without erasing imported provenance; stale writes rejected',()=>{const s=emptyState(),p=saveProject(s,{name:'项目'});p.legacy={question:'旧的错误理解'};p.originalStatus='历史状态';p.importSource={sourceUpdatedAt:'2026-10-15'};const input={id:p.id,version:1,name:'项目',stage:'数据处理',question:'用户更正的问题',goal:'目标',progress:'新进展',completed:'已做的工作',nextAction:'下一步'};editProject(s,input);assert.equal(p.version,2);assert.equal(projectContext(p).question,input.question);assert(!('legacy' in projectContext(p)));assert(!('historicalStatus' in projectContext(p)));assert.equal(p.legacy.question,'旧的错误理解');assert.equal(researchContext(s).projects[0].question,input.question);assert.throws(()=>editProject(s,input),/其他窗口/);assert.throws(()=>editProject(s,{...input,version:2,stage:'假的状态'}),/阶段/)});

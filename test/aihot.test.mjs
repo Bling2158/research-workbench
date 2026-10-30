@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {aihotFeed} from '../lib/aihot.mjs';
+const json=(data,status=200)=>({ok:status<400,status,json:async()=>data});
+test('aihot proxy whitelists kinds and params, sends the API user agent and caches',async()=>{const calls=[];const fetcher=async(url,opt)=>{calls.push({url,ua:opt.headers['User-Agent']});return json({items:[{id:'a'}]})};
+ await assert.rejects(()=>aihotFeed('../admin',{},fetcher),/未知/);
+ const out=await aihotFeed('latest',{category:'paper',window:'7d',mode:'all',cursor:'it3.abc-_',limit:'999'},fetcher);assert.equal(out.items[0].id,'a');
+ assert.equal(calls[0].url,'https://aihot.news/api/v1/items?mode=all&window=7d&category=paper&limit=20&cursor=it3.abc-_');assert.equal(calls[0].ua,'aihot-api/2.0.0');
+ await aihotFeed('latest',{category:'paper',window:'7d',mode:'all',cursor:'it3.abc-_'},fetcher);assert.equal(calls.length,1);
+ await aihotFeed('latest',{category:'evil',cursor:'a b&x=1'},fetcher);assert.equal(calls[1].url,'https://aihot.news/api/v1/items?mode=selected&window=24h&limit=20');
+ await aihotFeed('daily',{},fetcher);assert.equal(calls[2].url,'https://aihot.news/api/v1/dailies/latest?')});
+test('aihot proxy reports rate limits and outages clearly',async()=>{await assert.rejects(()=>aihotFeed('weekly',{},async()=>json({},429)),/频繁/);await assert.rejects(()=>aihotFeed('monthly',{},async()=>{throw new Error('down')}),/连不上/)});

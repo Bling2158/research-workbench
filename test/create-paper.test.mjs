@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {emptyState} from '../lib/store.mjs';
+import {createSubmission} from '../lib/paper-tools.mjs';
+test('direct paper creation stores authors and leaves unknown submission date empty; deduplicates safely',()=>{const s=emptyState(),args={request_id:'one',title:'Climate and Tea',journal:'Test Journal',authors:['Author A','Author B'],status:'已投稿'};const result=createSubmission(s,args,'web-agent');assert.equal(result.status,'saved');assert.deepEqual(s.submissions[0].authors,args.authors);assert.equal(s.submissions[0].submittedAt,'');assert.equal(s.submissions[0].history[0].time,null);assert(createSubmission(s,args,'web-agent').duplicate);assert.equal(s.submissions.length,1);assert.equal(createSubmission(s,{...args,request_id:'two',title:'CLIMATE & TEA'},'codex').status,'saved');const copy=createSubmission(s,{...args,request_id:'three',title:'Climate and Tea!',journal:'Different Journal'},'codex');assert.equal(copy.status,'exists');assert.equal(s.submissions[0].journal,'Test Journal');assert.throws(()=>createSubmission(s,{...args,title:'Changed'},'web-agent'),/请求ID/)});

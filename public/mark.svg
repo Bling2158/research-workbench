@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <title>Workbench</title>
+  <style>.tile{fill:#17181a}.l{stroke:#f7f6f3}@media (prefers-color-scheme:dark){.tile{fill:#ededee}.l{stroke:#111213}}</style>
+  <rect class="tile" width="64" height="64" rx="16"/>
+  <g class="l" stroke-width="4.5" stroke-linecap="round"><path d="M16 22c9-6 23 6 32 0"/><path d="M16 32c9-6 23 6 32 0"/><path d="M16 42c9-6 23 6 32 0"/></g>
+</svg>
